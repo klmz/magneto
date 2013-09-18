@@ -23,17 +23,17 @@ public class Magneto {
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
 		settings.load();
-		
+
 		RequestRouter router = new RequestRouter();
 		router.register(new MagnetoDeploy());
 		router.register(new MagnetoPagerMe());
-		
+
 		Magneto magneto = new Magneto(router, settings);
 		magneto.start();
 	}
 
 	private final RequestRouter router;
-	private Settings settings;
+	private final Settings settings;
 
 	public Magneto(RequestRouter router, Settings settings) {
 		this.router = router;
@@ -45,7 +45,7 @@ public class Magneto {
 
 		String host = settings.getChatServerHost();
 		int port = settings.getChatServerPort();
-		
+
 		ConnectionConfiguration config = new ConnectionConfiguration(host, port);
 		final XMPPConnection connection = new XMPPConnection(config);
 		connection.connect();
@@ -56,9 +56,7 @@ public class Magneto {
 
 		Collection<HostedRoom> hostedRooms = MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
 		for (final HostedRoom room : hostedRooms) {
-			if (room.getName().equals("Magneto")) {
-				listenToRoom(connection, settings, room);
-			}
+			listenToRoom(connection, settings, room);
 		}
 
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
