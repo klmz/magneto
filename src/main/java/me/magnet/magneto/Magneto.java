@@ -1,6 +1,8 @@
 package me.magnet.magneto;
 
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.plugins.MagnetoDeploy;
@@ -54,23 +56,32 @@ public class Magneto {
 		String password = settings.getUserPassword();
 		connection.login(username, password);
 
-		Collection<HostedRoom> hostedRooms = MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
+		Collection<HostedRoom> hostedRooms =
+		        MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
 		for (final HostedRoom room : hostedRooms) {
 			listenToRoom(connection, settings, room);
 		}
 
+		final CountDownLatch waitForDisconnect = new CountDownLatch(1);
+		log.info("Disconnecting");
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
 				connection.disconnect();
+				waitForDisconnect.countDown();
 			}
 		}));
 
-		Thread.currentThread().join();
-
+		try {
+			waitForDisconnect.await(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			log.warn("Exiting before disconnect completed");
+		}
+		log.info("Shutdown complete");
 	}
 
-	private void listenToRoom(XMPPConnection connection, Settings settings, final HostedRoom room) throws XMPPException {
+	private void listenToRoom(XMPPConnection connection, Settings settings, final HostedRoom room)
+	        throws XMPPException {
 		final MultiUserChat chat = new MultiUserChat(connection, room.getJid());
 		DiscussionHistory discussionHistory = new DiscussionHistory();
 		discussionHistory.setMaxChars(0);
@@ -102,11 +113,10 @@ public class Magneto {
 		}
 
 		String body = message.getBody().trim();
-		body = body.substring(body.indexOf(' ') + 1);
-		while (body.contains("  ")) {
-			body = body.replace("  ", " ");
+		while(body.contains("  ")) {
+			body = body.replaceAll("  ", " ");
 		}
-
+		body = body.substring(body.indexOf(' ') + 1);
 		router.route(chat, user, body);
 	}
 
