@@ -11,4 +11,4 @@
 .classpath
 target/
 
-config.properties
+./config.properties
