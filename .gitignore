@@ -11,4 +11,5 @@
 .classpath
 target/
 
+# Other files #
 ./config.properties
