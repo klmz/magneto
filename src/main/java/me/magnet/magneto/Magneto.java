@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.plugins.MagnetoDeploy;
+import me.magnet.magneto.plugins.MagnetoGreet;
 import me.magnet.magneto.plugins.MagnetoPagerMe;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -27,6 +28,7 @@ public class Magneto {
 		RequestRouter router = new RequestRouter();
 		router.register(new MagnetoDeploy());
 		router.register(new MagnetoPagerMe());
+		router.register(new MagnetoGreet());
 
 		Magneto magneto = new Magneto(router, settings);
 		magneto.start();
