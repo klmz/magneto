@@ -1,5 +1,7 @@
 package me.magnet.magneto.plugins;
 
+import java.util.Random;
+
 import me.magnet.magneto.MagnetoPlugin;
 import me.magnet.magneto.annotations.Param;
 import me.magnet.magneto.annotations.RespondTo;
@@ -8,17 +10,23 @@ import rx.subjects.Subject;
 
 public class MagnetoGreet implements MagnetoPlugin {
 	
-	@RespondTo("good {moment}")
-	public Observable<String> deploy(final @Param("moment") String moment) {
-		String[] splitMoment = moment.split(" ");
+	String[] responses = {
+			"Hi!",
+			"Hello",
+			"Welcome!",
+			"Good day to you!"
+	};
+	
+	Random randomGen = new Random();
 
-		// Profanity check
-		for(int i = 0; i < splitMoment.length; i++){
-			if(splitMoment[i].contains("sex")){
-				return Subject.from("http://youtu.be/hpigjnKl7nI");
-			}
-		}
+	/*
+	 * Answer to greetings with a random predefined response.
+	 */
+	@RespondTo("\\b([Hh]ello|[Hh]i).*")
+	public Observable<String> deploy() {
 
-		return Subject.from("Good " + moment + " to you too!");
+		//Return a random entry in 'responses'
+		int random = randomGen.nextInt(responses.length);
+		return Subject.from(responses[random]);
 	}
 }
