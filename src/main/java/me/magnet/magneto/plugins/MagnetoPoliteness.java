@@ -9,7 +9,7 @@ import rx.subjects.Subject;
 
 public class MagnetoPoliteness implements MagnetoPlugin {
 
-	public static final String[] responses = {
+	public static final String[] RESPONSES = {
 	        "You're welcome.",
 	        "No problem.",
 	        "Anytime.",
@@ -24,7 +24,7 @@ public class MagnetoPoliteness implements MagnetoPlugin {
 	 */
 	@RespondTo("\\b([tT]hanks|ty|TY|[tT]hank you).*")
 	public Observable<String> deploy() {
-		int random = new Random().nextInt(responses.length);
-		return Subject.from(responses[random]);
+		int random = new Random().nextInt(RESPONSES.length);
+		return Subject.from(RESPONSES[random]);
 	}
 }
