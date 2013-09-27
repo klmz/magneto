@@ -9,7 +9,7 @@ import rx.subjects.Subject;
 
 public class MagnetoGreet implements MagnetoPlugin {
 
-	public static final String[] responses = {
+	public static final String[] RESPONSES = {
 	        "Hi!",
 	        "Hello",
 	        "Welcome!",
@@ -25,7 +25,7 @@ public class MagnetoGreet implements MagnetoPlugin {
 	public Observable<String> deploy() {
 
 		// Return a random entry in 'responses'
-		int random = randomGen.nextInt(responses.length);
-		return Subject.from(responses[random]);
+		int random = randomGen.nextInt(RESPONSES.length);
+		return Subject.from(RESPONSES[random]);
 	}
 }
