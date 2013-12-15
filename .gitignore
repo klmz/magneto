@@ -11,10 +11,5 @@
 .classpath
 target/
 
-# VIM swap files #
-.swn
-.swp
-.swo
-
 # Other files #
-config.properties
+./config.properties
