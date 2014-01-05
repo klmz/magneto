@@ -4,13 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.annotations.RespondTo;
-
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-
-import com.google.common.collect.Lists;
 
 @Slf4j
 public class RequestRouter {
@@ -32,6 +30,8 @@ public class RequestRouter {
 
 	public void route(MultiUserChat chat, User user, String message) {
 		boolean handled = false;
+
+
 		for (Handler handler : handlers) {
 			if (handler.accepts(message)) {
 				handled = true;
@@ -49,6 +49,9 @@ public class RequestRouter {
 			}
 		}
 
+
+
+
 		if (!handled) {
 			log.warn("The message: \"{}\" was not handled!", message);
 			try {
@@ -59,5 +62,4 @@ public class RequestRouter {
 			}
 		}
 	}
-
 }

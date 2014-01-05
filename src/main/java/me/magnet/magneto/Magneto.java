@@ -5,11 +5,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
-import me.magnet.magneto.plugins.MagnetoDeploy;
 import me.magnet.magneto.plugins.MagnetoGreet;
-import me.magnet.magneto.plugins.MagnetoPagerMe;
 import me.magnet.magneto.plugins.MagnetoPoliteness;
-
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SASLAuthentication;
@@ -24,26 +21,24 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 @Slf4j
 public class Magneto {
 
-	public static void main(String[] args) throws Exception {
-		Settings settings = new Settings();
-		settings.load();
-
-		RequestRouter router = new RequestRouter();
-		router.register(new MagnetoDeploy());
-		router.register(new MagnetoPagerMe());
-		router.register(new MagnetoGreet());
-		router.register(new MagnetoPoliteness());
-
-		Magneto magneto = new Magneto(router, settings);
-		magneto.start();
-	}
-
 	private final RequestRouter router;
 	private final Settings settings;
 
 	public Magneto(RequestRouter router, Settings settings) {
 		this.router = router;
 		this.settings = settings;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Settings settings = new Settings();
+		settings.load();
+
+		RequestRouter router = new RequestRouter();
+		router.register(new MagnetoGreet());
+		router.register(new MagnetoPoliteness());
+
+		Magneto magneto = new Magneto(router, settings);
+		magneto.start();
 	}
 
 	public void start() throws Exception {
@@ -55,13 +50,13 @@ public class Magneto {
 		ConnectionConfiguration config = new ConnectionConfiguration(host, port);
 		final XMPPConnection connection = new XMPPConnection(config);
 		connection.connect();
-
 		String username = settings.getUserName();
 		String password = settings.getUserPassword();
+
 		connection.login(username, password);
 
 		Collection<HostedRoom> hostedRooms =
-		        MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
+		  MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
 		for (final HostedRoom room : hostedRooms) {
 			listenToRoom(connection, settings, room);
 		}
@@ -78,14 +73,15 @@ public class Magneto {
 
 		try {
 			waitForDisconnect.await(5, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			log.warn("Exiting before disconnect completed");
 		}
 		log.info("Shutdown complete");
 	}
 
 	private void listenToRoom(XMPPConnection connection, Settings settings, final HostedRoom room)
-	        throws XMPPException {
+	  throws XMPPException {
 		final MultiUserChat chat = new MultiUserChat(connection, room.getJid());
 		DiscussionHistory discussionHistory = new DiscussionHistory();
 		discussionHistory.setMaxChars(0);
@@ -103,7 +99,7 @@ public class Magneto {
 						processMessage(chat, (Message) packet);
 					}
 					catch (Exception e) {
-						e.printStackTrace();
+						log.error("Cannot process message: {}", e.getMessage(), e);
 					}
 				}
 			}
@@ -117,7 +113,7 @@ public class Magneto {
 		}
 
 		String body = message.getBody().trim();
-		while(body.contains("  ")) {
+		while (body.contains("  ")) {
 			body = body.replaceAll("  ", " ");
 		}
 		body = body.substring(body.indexOf(' ') + 1);
