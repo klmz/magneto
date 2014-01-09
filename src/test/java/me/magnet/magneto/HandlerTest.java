@@ -8,16 +8,16 @@ import static org.mockito.Mockito.verify;
 import java.lang.reflect.Method;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import me.magnet.magneto.annotations.Param;
 import me.magnet.magneto.annotations.RespondTo;
-
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import rx.Observable;
 import rx.Observer;
 
@@ -25,16 +25,18 @@ import rx.Observer;
 public class HandlerTest {
 
 	@Data
-	public static class TestPlugin implements MagnetoPlugin {
+	@NoArgsConstructor
+	@Accessors(chain = true)
+	public static class TestPlugin extends MagnetoPluginAdapter {
 
-		private final Observable<String> observable;
+		private Observable<String> observable;
 		private String first;
 		private String second;
 
 		@RespondTo("test {a} and {b}")
 		public Observable<String> deploy(
-		        final @Param("a") String first,
-		        final @Param("b") String second) {
+		  final @Param("a") String first,
+		  final @Param("b") String second) {
 			this.first = first;
 			this.second = second;
 			return observable;
@@ -54,9 +56,9 @@ public class HandlerTest {
 
 	@Before
 	public void setup() throws NoSuchMethodException, SecurityException {
-		testPlugin = new TestPlugin(observable);
+		testPlugin = new TestPlugin().setObservable(observable);
 		Method method =
-		        testPlugin.getClass().getDeclaredMethod("deploy", String.class, String.class);
+		  testPlugin.getClass().getDeclaredMethod("deploy", String.class, String.class);
 		handler = new Handler(testPlugin, method);
 		user = new User("Example User");
 	}

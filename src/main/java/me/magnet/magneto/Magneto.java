@@ -5,13 +5,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
-import me.magnet.magneto.plugins.MagnetoGreet;
-import me.magnet.magneto.plugins.MagnetoPoliteness;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.SASLAuthentication;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
+import me.magnet.magneto.plugins.PluginFinder;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
@@ -34,8 +29,8 @@ public class Magneto {
 		settings.load();
 
 		RequestRouter router = new RequestRouter();
-		router.register(new MagnetoGreet());
-		router.register(new MagnetoPoliteness());
+
+		PluginFinder.addPluginsTo(router);
 
 		Magneto magneto = new Magneto(router, settings);
 		magneto.start();
