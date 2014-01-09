@@ -41,6 +41,10 @@ public class RequestRouter {
 
 	public void route(ChatRoom chat, User user, String message) {
 		boolean handled = false;
+		if (message.equals("help")) {
+			printHelp(chat);
+			return;
+		}
 
 		for (Handler handler : handlers) {
 			if (handler.accepts(message)) {
@@ -69,6 +73,23 @@ public class RequestRouter {
 			catch (XMPPException e) {
 				log.error(e.getMessage(), e);
 			}
+		}
+	}
+
+	private void printHelp(ChatRoom chat) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("The commands available to you are:\n");
+		for (String key : pluginCommands.keySet()) {
+			sb.append("Plugin \"").append(key).append("\":\n");
+			for (String command : pluginCommands.get(key)) {
+				sb.append('\t').append(command).append('\n');
+			}
+		}
+		try {
+			chat.sendMessage(sb.toString());
+		}
+		catch (XMPPException e) {
+			log.error("Could not print the hep message");
 		}
 	}
 }
