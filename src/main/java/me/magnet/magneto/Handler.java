@@ -9,12 +9,10 @@ import java.util.regex.Pattern;
 import lombok.Data;
 import me.magnet.magneto.annotations.Param;
 import me.magnet.magneto.annotations.RespondTo;
-
+import me.magnet.magneto.plugins.MagnetoPlugin;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import rx.Observable;
 import rx.Observer;
 
@@ -41,7 +39,7 @@ class Handler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void handle(final MultiUserChat chat, User user, String message)
+	public void handle(final ChatRoom chat, User user, String message)
 	        throws IllegalAccessException,
 	        IllegalArgumentException, InvocationTargetException {
 		Matcher matcher = pattern.matcher(message);
@@ -65,9 +63,9 @@ class Handler {
 			}
 
 			@Override
-			public void onNext(String arg0) {
+			public void onNext(String message) {
 				try {
-					chat.sendMessage(arg0);
+					chat.sendMessage(message);
 				} catch (XMPPException e) {
 					Logger log = LoggerFactory.getLogger(method.getClass());
 					log.error("Error in OnNext for {}", method, e);

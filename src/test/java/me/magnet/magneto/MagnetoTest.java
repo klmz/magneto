@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +25,7 @@ public class MagnetoTest {
 	private RequestRouter router;
 
 	@Mock
-	private MultiUserChat chat;
+	private ChatRoom chat;
 
 	@Captor
 	ArgumentCaptor<String> bodyCaptor;
@@ -35,7 +34,7 @@ public class MagnetoTest {
 	public void setup() throws IOException {
 		Settings sets = new Settings();
 		sets.load();
-		magneto = new Magneto(router, sets);
+		magneto = new MagnetoXmmp(router, sets);
 	}
 
 	@Test

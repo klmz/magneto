@@ -1,4 +1,4 @@
-package me.magnet.magneto;
+package me.magnet.magneto.plugins;
 
 public interface MagnetoPlugin {
 

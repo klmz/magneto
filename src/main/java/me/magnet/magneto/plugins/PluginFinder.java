@@ -4,8 +4,6 @@ package me.magnet.magneto.plugins;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
-import me.magnet.magneto.MagnetoPlugin;
-import me.magnet.magneto.MagnetoPluginAdapter;
 import me.magnet.magneto.RequestRouter;
 import org.reflections.Reflections;
 

@@ -1,7 +1,7 @@
-package me.magnet.magneto;
+package me.magnet.magneto.plugins;
 
 /**
- * A adapter for the {@link me.magnet.magneto.MagnetoPlugin}.
+ * A adapter for the {@link MagnetoPlugin}.
  */
 public class MagnetoPluginAdapter implements MagnetoPlugin {
 

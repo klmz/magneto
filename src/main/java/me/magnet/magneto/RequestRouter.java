@@ -9,8 +9,8 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.annotations.RespondTo;
+import me.magnet.magneto.plugins.MagnetoPlugin;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 
 @Slf4j
 public class RequestRouter {
@@ -39,7 +39,7 @@ public class RequestRouter {
 	}
 
 
-	public void route(MultiUserChat chat, User user, String message) {
+	public void route(ChatRoom chat, User user, String message) {
 		boolean handled = false;
 
 		for (Handler handler : handlers) {

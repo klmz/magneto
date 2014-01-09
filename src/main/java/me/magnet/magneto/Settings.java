@@ -5,7 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
+
+import com.google.common.base.Preconditions;
 
 public class Settings {
 
@@ -27,7 +30,9 @@ public class Settings {
 		File propsFile = new File("config.properties");
 		if (!propsFile.exists()) {
 			try {
-				propsFile = new File(Settings.class.getResource("/config.properties").toURI());
+				URL settings = Settings.class.getResource("/config.properties");
+				Preconditions.checkNotNull(settings, "config.properties not found.");
+				propsFile = new File(settings.toURI());
 			} catch (URISyntaxException e) {
 				throw new RuntimeException("Whut no URI possible for " + propsFile, e);
 			}

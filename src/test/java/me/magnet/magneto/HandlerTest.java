@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import me.magnet.magneto.annotations.Param;
 import me.magnet.magneto.annotations.RespondTo;
-import org.jivesoftware.smackx.muc.MultiUserChat;
+import me.magnet.magneto.plugins.MagnetoPluginAdapter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ public class HandlerTest {
 	private User user;
 
 	@Mock
-	private MultiUserChat chat;
+	private ChatRoom chat;
 
 	@Mock
 	private Observable<String> observable;

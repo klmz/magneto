@@ -2,7 +2,6 @@ package me.magnet.magneto.plugins;
 
 import java.util.Random;
 
-import me.magnet.magneto.MagnetoPlugin;
 import me.magnet.magneto.annotations.RespondTo;
 import rx.Observable;
 import rx.subjects.Subject;
@@ -42,8 +41,6 @@ public class MagnetoPoliteness implements MagnetoPlugin {
 	 */
 	@RespondTo("\\b([Hh]ello|[Hh]i).*")
 	public Observable<String> hi() {
-
-		// Return a random entry in 'responses'
 		int random = randomGen.nextInt(RESPONSES.length);
 		return Subject.from(WELCOMES[random]);
 	}
