@@ -18,22 +18,31 @@ public class MagnetoCli extends Magneto {
 
 	@Override
 	public void start() throws Exception {
-		log.info("Starting magneto CLI. You are now user 'CLI'. Magneto responds to 'magneto'.");
+		log.info("Starting magneto CLI");
+		System.out.println("You are now user 'CLI'. Magneto responds to 'magneto'. Type 'exit' to exit.");
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {
 			while (!Thread.interrupted()) {
 				printPrefix();
 				String command = in.readLine();
-				Message message = new Message();
-				message.setBody(command);
-				message.setFrom("CLI");
-				processMessage(new ChatRoom() {
-					@Override
-					public void sendMessage(String message) {
-						System.out.println(message);
-					}
-				}, message);
+				if (command.equalsIgnoreCase("exit")) {
+					break;
+				} else {
+					runCommand(command);
+				}
 			}
 		}
+	}
+
+	private void runCommand(String command) throws Exception {
+		Message message = new Message();
+		message.setBody(command);
+		message.setFrom("CLI");
+		processMessage(new ChatRoom() {
+			@Override
+			public void sendMessage(String message) {
+				System.out.println("Response: " + message);
+			}
+		}, message);
 	}
 
 	private void printPrefix() {
