@@ -31,6 +31,9 @@ public class Settings {
 		if (!propsFile.exists()) {
 			try {
 				URL settings = Settings.class.getResource("/config.properties");
+				if (settings == null) {
+					settings = Settings.class.getResource("conf/config.properties");
+				}
 				Preconditions.checkNotNull(settings, "config.properties not found.");
 				propsFile = new File(settings.toURI());
 			} catch (URISyntaxException e) {
@@ -55,7 +58,7 @@ public class Settings {
 	}
 
 	public String getUserName() {
-		return properties.getProperty(CHAT_USER_USERNAME);
+		return properties.getProperty(CHAT_USER_USERNAME, "magneto");
 	}
 
 	public String getUserDisplayName() {
@@ -67,7 +70,7 @@ public class Settings {
 	}
 
 	public String getUserMention() {
-		return properties.getProperty(CHAT_USER_MENTION);
+		return properties.getProperty(CHAT_USER_MENTION, "magneto");
 	}
 
 }
