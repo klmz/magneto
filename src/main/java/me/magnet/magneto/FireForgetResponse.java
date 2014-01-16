@@ -6,11 +6,15 @@ import java.util.Queue;
 import com.google.common.collect.Lists;
 
 
+/**
+ * A non-streaming response. Everything send is send after the response is returned.
+ * After that the response is disposed. Any exceptions are reported to the client and put in the log.
+ */
 public class FireForgetResponse extends Response {
 
 	private final Queue<String> messagesToSend = Lists.newLinkedList();
 
-	protected FireForgetResponse sendMessage(String message) {
+	public FireForgetResponse sendMessage(String message) {
 		messagesToSend.add(message);
 		return this;
 	}
@@ -23,7 +27,8 @@ public class FireForgetResponse extends Response {
 		}
 		catch (Exception e) {
 			handler.onError(e);
-		} finally {
+		}
+		finally {
 			handler.onComplete();
 		}
 	}
