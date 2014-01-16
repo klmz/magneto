@@ -13,6 +13,9 @@ import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
+/**
+ * The Xmmp verison of Magneto. Requires a configuration.properties to be on the classpath.
+ */
 @Slf4j
 public class MagnetoXmmp extends Magneto {
 

@@ -11,6 +11,9 @@ import me.magnet.magneto.annotations.Param;
 import me.magnet.magneto.annotations.RespondTo;
 import me.magnet.magneto.plugins.MagnetoPlugin;
 
+/**
+ * Routes a request to a method that has a {@link me.magnet.magneto.annotations.RespondTo} annotation.
+ */
 @Data
 class Handler {
 
@@ -29,14 +32,26 @@ class Handler {
 		this.pattern = Pattern.compile(key);
 	}
 
+	/**
+	 * @param message The incoming message
+	 * @return If this handled is applicable for the given message.
+	 */
 	public boolean accepts(String message) {
 		return pattern.matcher(message).matches();
 	}
 
+	/**
+	 * @param chat The room messages have to be sent to.
+	 * @param user The user that sent the message.
+	 * @param message The incoming message.
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@SuppressWarnings("unchecked")
 	public void handle(final ChatRoom chat, User user, String message)
-	        throws IllegalAccessException,
-	        IllegalArgumentException, InvocationTargetException {
+	  throws IllegalAccessException,
+	  IllegalArgumentException, InvocationTargetException {
 		Matcher matcher = pattern.matcher(message);
 		matcher.matches();
 
@@ -52,7 +67,7 @@ class Handler {
 	}
 
 	private Object[] parseValues(Matcher matcher) {
-	    Param[] params = getParams(method);
+		Param[] params = getParams(method);
 		Class<?>[] types = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 		Object[] values = new Object[annotations.length];
@@ -62,8 +77,8 @@ class Handler {
 			Class<?> type = types[index];
 			values[index] = parse(value, type);
 		}
-	    return values;
-    }
+		return values;
+	}
 
 	private Param[] getParams(Method method) {
 		Param[] parameters = new Param[method.getParameterAnnotations().length];
@@ -109,7 +124,7 @@ class Handler {
 		}
 
 		throw new IllegalArgumentException("Cannot parse value: " + value + " as: "
-		        + type.getSimpleName());
+		  + type.getSimpleName());
 	}
 
 }

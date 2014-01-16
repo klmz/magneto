@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.plugins.PluginFinder;
 import org.jivesoftware.smack.packet.Message;
 
+/**
+ * Entry point class for magneto. Start it using the main method.
+ */
 @Slf4j
 public abstract class Magneto {
 
@@ -15,6 +18,11 @@ public abstract class Magneto {
 		this.userMention = userMention;
 	}
 
+	/**
+	 * Start Magneto.
+	 * @param args if args is "CLI" the command line interface will be started.
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		RequestRouter router = new RequestRouter();
 
@@ -33,7 +41,7 @@ public abstract class Magneto {
 
 	public abstract void start() throws Exception;
 
-	public void processMessage(final ChatRoom chat, Message message) throws Exception {
+	protected void processMessage(final ChatRoom chat, Message message) throws Exception {
 		User user = User.of(message.getFrom());
 		if (!accepts(message)) {
 			return;

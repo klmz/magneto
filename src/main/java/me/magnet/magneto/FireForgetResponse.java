@@ -14,11 +14,13 @@ public class FireForgetResponse extends Response {
 
 	private final Queue<String> messagesToSend = Lists.newLinkedList();
 
+	@Override
 	public FireForgetResponse sendMessage(String message) {
 		messagesToSend.add(message);
 		return this;
 	}
 
+	@Override
 	protected void setHandler(AbstractMessageHandler handler) {
 		try {
 			for (String message : messagesToSend) {

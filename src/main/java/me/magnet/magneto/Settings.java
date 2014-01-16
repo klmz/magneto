@@ -10,6 +10,9 @@ import java.util.Properties;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * A wrapper for the configuration.properties file.
+ */
 public class Settings {
 
 	private static final String CHAT_SERVER_HOST = "magneto.chat.server.host";

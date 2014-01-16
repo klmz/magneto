@@ -12,6 +12,10 @@ import me.magnet.magneto.annotations.RespondTo;
 import me.magnet.magneto.plugins.MagnetoPlugin;
 import org.jivesoftware.smack.XMPPException;
 
+/**
+ * Routers messages to the appriopiate handler. Once they're at their handler the router routes the responses
+ * back to the client.
+ */
 @Slf4j
 public class RequestRouter {
 

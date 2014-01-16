@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.RequestRouter;
 import org.reflections.Reflections;
 
+/**
+ * Scans for plugins on the classpath. Plugins that are enclosed in classes are ignored for now.
+ */
 @Slf4j
 public class PluginFinder {
 
