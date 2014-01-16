@@ -10,11 +10,6 @@ import lombok.Data;
 import me.magnet.magneto.annotations.Param;
 import me.magnet.magneto.annotations.RespondTo;
 import me.magnet.magneto.plugins.MagnetoPlugin;
-import org.jivesoftware.smack.XMPPException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import rx.Observable;
-import rx.Observer;
 
 @Data
 class Handler {
@@ -47,29 +42,11 @@ class Handler {
 
 		Object[] values = parseValues(matcher);
 
-		Observable<String> output = (Observable<String>) method.invoke(target, values);
-		output.subscribe(new Observer<String>() {
-
-			private final Logger log = LoggerFactory.getLogger(method.getClass());
-
+		Response output = (Response) method.invoke(target, values);
+		output.setHandler(new AbstractMessageHandler() {
 			@Override
-			public void onCompleted() {
-				log.trace("onCompleted");
-			}
-
-			@Override
-			public void onError(Throwable e) {
-				log.error("Error in Observer", e);
-			}
-
-			@Override
-			public void onNext(String message) {
-				try {
-					chat.sendMessage(message);
-				} catch (XMPPException e) {
-					Logger log = LoggerFactory.getLogger(method.getClass());
-					log.error("Error in OnNext for {}", method, e);
-				}
+			public void newMessage(String message) throws Exception {
+				chat.sendMessage(message);
 			}
 		});
 	}

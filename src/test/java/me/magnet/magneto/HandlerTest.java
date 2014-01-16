@@ -2,8 +2,6 @@ package me.magnet.magneto;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Method;
 
@@ -18,8 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import rx.Observable;
-import rx.Observer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HandlerTest {
@@ -29,17 +25,16 @@ public class HandlerTest {
 	@Accessors(chain = true)
 	public static class TestPlugin extends MagnetoPluginAdapter {
 
-		private Observable<String> observable;
 		private String first;
 		private String second;
 
 		@RespondTo("test {a} and {b}")
-		public Observable<String> deploy(
+		public Response deploy(
 		  final @Param("a") String first,
 		  final @Param("b") String second) {
 			this.first = first;
 			this.second = second;
-			return observable;
+			return Response.fireAndForget().sendMessage(first).sendMessage(second);
 		}
 
 	}
@@ -52,11 +47,11 @@ public class HandlerTest {
 	private ChatRoom chat;
 
 	@Mock
-	private Observable<String> observable;
+	private Response observable;
 
 	@Before
 	public void setup() throws NoSuchMethodException, SecurityException {
-		testPlugin = new TestPlugin().setObservable(observable);
+		testPlugin = new TestPlugin();
 		Method method =
 		  testPlugin.getClass().getDeclaredMethod("deploy", String.class, String.class);
 		handler = new Handler(testPlugin, method);
@@ -71,7 +66,6 @@ public class HandlerTest {
 		handler.handle(chat, user, query);
 		assertThat(testPlugin.getFirst(), is("example1"));
 		assertThat(testPlugin.getSecond(), is("example2"));
-		verify(observable).subscribe(any(Observer.class));
 	}
 
 	@Test
@@ -82,6 +76,5 @@ public class HandlerTest {
 		handler.handle(chat, user, query);
 		assertThat(testPlugin.getFirst(), is("example1 example2"));
 		assertThat(testPlugin.getSecond(), is("example3 example4"));
-		verify(observable).subscribe(any(Observer.class));
 	}
 }
