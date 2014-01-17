@@ -1,18 +1,17 @@
 package me.magnet.magneto;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A wrapper for the configuration.properties file.
  */
+@Slf4j
 public class Settings {
 
 	private static final String CHAT_SERVER_HOST = "magneto.chat.server.host";
@@ -30,22 +29,16 @@ public class Settings {
 	}
 
 	public void load() throws IOException {
-		File propsFile = new File("config.properties");
-		if (!propsFile.exists()) {
-			try {
-				URL settings = Settings.class.getResource("/config.properties");
-				if (settings == null) {
-					settings = Settings.class.getResource("conf/config.properties");
-				}
-				Preconditions.checkNotNull(settings, "config.properties not found.");
-				propsFile = new File(settings.toURI());
-			} catch (URISyntaxException e) {
-				throw new RuntimeException("Whut no URI possible for " + propsFile, e);
-			}
+		URL settings = Settings.class.getResource("/config.properties");
+		if (settings == null) {
+			settings = Settings.class.getResource("conf/config.properties");
 		}
-		try (InputStream in = new FileInputStream(propsFile)) {
+		Preconditions.checkNotNull(settings, "config.properties not found.");
+		log.info("Loading {}", settings);
+		try (InputStream in = settings.openStream()) {
 			properties.load(in);
 		}
+
 	}
 
 	public String getChatServerHost() {

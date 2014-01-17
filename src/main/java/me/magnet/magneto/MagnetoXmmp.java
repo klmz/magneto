@@ -2,7 +2,6 @@ package me.magnet.magneto;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,6 @@ public class MagnetoXmmp extends Magneto {
 		}
 
 		final CountDownLatch waitForDisconnect = new CountDownLatch(1);
-		log.info("Disconnecting");
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -71,7 +69,8 @@ public class MagnetoXmmp extends Magneto {
 		}));
 
 		try {
-			waitForDisconnect.await(5, TimeUnit.SECONDS);
+			waitForDisconnect.await();
+			log.info("Disconnecting");
 		}
 		catch (InterruptedException e) {
 			log.warn("Exiting before disconnect completed");
