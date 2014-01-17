@@ -29,7 +29,7 @@ class Handler {
 
 		this.target = target;
 		this.method = method;
-		this.pattern = Pattern.compile(key);
+		this.pattern = Pattern.compile(key, Pattern.CASE_INSENSITIVE);
 	}
 
 	/**

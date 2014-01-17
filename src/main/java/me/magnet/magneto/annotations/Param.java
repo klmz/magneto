@@ -8,12 +8,14 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a parameter in a message sent to magneto.
- * 
- * For example, the parameter bar will be set to "test" when this plugin is called with the message "Foo test".
- *<p><blockquote><pre>
- * @RespondTo("Foo {bar} ")
- * 	public Response test(@Param("bar") String bar) { .. }
- * </p></blockquote></pre>
+ *
+ * <p>
+ * For example, the parameter bar will be set to <code>test</code> when this plugin is called with the message <code>Foo test</code>.
+ * <pre>
+ * {@literal @}RespondTo("Foo {bar} ")
+ * public Response test(@Param("bar") String bar) { .. }
+ * </pre>
+ * </p>
  */
 @Target({ PARAMETER })
 @Retention(RUNTIME)
