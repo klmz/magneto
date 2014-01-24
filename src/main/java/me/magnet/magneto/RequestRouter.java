@@ -86,8 +86,9 @@ public class RequestRouter {
 		for (String key : pluginCommands.keySet()) {
 			sb.append("Plugin \"").append(key).append("\":\n");
 			for (String command : pluginCommands.get(key)) {
-				sb.append('\t').append(command).append('\n');
+				sb.append("  ").append(command).append('\n');
 			}
+			sb.append("\n");
 		}
 		try {
 			chat.sendMessage(sb.toString());
