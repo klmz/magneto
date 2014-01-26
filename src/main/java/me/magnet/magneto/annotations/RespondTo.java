@@ -16,10 +16,19 @@ import java.lang.annotation.Target;
  * public Response hello() { .. }
  * </pre>
  *
- * It also works with regular expressions. This metthod respondes to "hello" and "hi"
+ * It also works with regular expressions. This method responds to "hello" and "hi"
  * <pre>
  * {@literal @}RespondTo(""\\b(hello|hi).*"")
  * public Response hello() { .. }
+ * </pre>
+ * </p>
+ *
+ * You can also inject the Context of a command by insertin the {@link me.magnet.magneto.Context}.
+ * <pre>
+ * {@literal @}RespondTo(""\\b(hello|hi).*"")
+ * public Response hello(Context contex) {
+ * 	User from = context.getFrom();
+ * }
  * </pre>
  * </p>
  */

@@ -37,11 +37,22 @@ public class HandlerTest {
 			return Response.fireAndForget().sendMessage(first).sendMessage(second);
 		}
 
+		@RespondTo("context {a} and {b}")
+		public Response deploy(
+		  final @Param("a") String first,
+		  final @Param("b") String second,
+			final Context context) {
+			this.first = first;
+			this.second = second;
+			return Response.fireAndForget().sendMessage(context.getFrom().getFullName());
+		}
+
 	}
 
 	private TestPlugin testPlugin;
 	private Handler handler;
 	private User user;
+	private Context context;
 
 	@Mock
 	private ChatRoom chat;
@@ -56,6 +67,7 @@ public class HandlerTest {
 		  testPlugin.getClass().getDeclaredMethod("deploy", String.class, String.class);
 		handler = new Handler(testPlugin, method);
 		user = new User("Example User");
+		context = Context.builder().from(user).room("test").build();
 	}
 
 	@Test
@@ -63,7 +75,7 @@ public class HandlerTest {
 	public void acceptsMethod() throws Exception {
 		String query = "test example1 and example2";
 		assertThat(handler.accepts(query), is(true));
-		handler.handle(chat, user, query);
+		handler.handle(chat, context, query);
 		assertThat(testPlugin.getFirst(), is("example1"));
 		assertThat(testPlugin.getSecond(), is("example2"));
 	}
@@ -73,8 +85,21 @@ public class HandlerTest {
 	public void acceptsMultiArgMethod() throws Exception {
 		String query = "test example1 example2 and example3 example4";
 		assertThat(handler.accepts(query), is(true));
-		handler.handle(chat, user, query);
+		handler.handle(chat, context, query);
 		assertThat(testPlugin.getFirst(), is("example1 example2"));
 		assertThat(testPlugin.getSecond(), is("example3 example4"));
+	}
+
+	@Test
+	public void testContextIsInjected() throws  Exception {
+		String query = "context a and b";
+		Method method =
+		  testPlugin.getClass().getDeclaredMethod("deploy", String.class, String.class, Context.class);
+		handler = new Handler(testPlugin, method);
+
+		assertThat(handler.accepts(query), is(true));
+		handler.handle(chat, context, query);
+		assertThat(testPlugin.getFirst(), is("a"));
+		assertThat(testPlugin.getSecond(), is("b"));
 	}
 }

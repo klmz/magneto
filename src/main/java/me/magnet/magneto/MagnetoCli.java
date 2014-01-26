@@ -42,6 +42,11 @@ public class MagnetoCli extends Magneto {
 			public void sendMessage(String message) {
 				System.out.println("Response: " + message);
 			}
+
+			@Override
+			public String getRoom() {
+				return "CLI";
+			}
 		}, message);
 	}
 

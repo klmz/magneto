@@ -8,4 +8,9 @@ import org.jivesoftware.smack.XMPPException;
 public interface ChatRoom {
 
 	public void sendMessage(String message) throws XMPPException;
+
+	/**
+	 * @return The name of the room.
+	 */
+	public String getRoom();
 }

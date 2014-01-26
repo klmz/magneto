@@ -2,6 +2,7 @@ package me.magnet.magneto;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -44,7 +45,7 @@ public class MagnetoTest {
 		message.setFrom(user.getFullName());
 		message.setBody("@magneto   x    y   ");
 		magneto.processMessage(chat, message);
-		verify(router).route(eq(chat), eq(user), bodyCaptor.capture());
+		verify(router).route(eq(chat), any(Context.class), bodyCaptor.capture());
 		assertThat(bodyCaptor.getValue(), is("x y"));
 	}
 }

@@ -20,6 +20,7 @@ public abstract class Magneto {
 
 	/**
 	 * Start Magneto.
+	 *
 	 * @param args if args is "CLI" the command line interface will be started.
 	 * @throws Exception
 	 */
@@ -31,7 +32,8 @@ public abstract class Magneto {
 		Magneto magneto;
 		if (args.length > 0 && "CLI".equalsIgnoreCase(args[0])) {
 			magneto = new MagnetoCli(router);
-		} else {
+		}
+		else {
 			Settings settings = new Settings();
 			settings.load();
 			magneto = new MagnetoXmmp(router, settings);
@@ -43,6 +45,10 @@ public abstract class Magneto {
 
 	protected void processMessage(final ChatRoom chat, Message message) throws Exception {
 		User user = User.of(message.getFrom());
+		Context context = Context.builder()
+		  .room(chat.getRoom())
+		  .from(user)
+		  .build();
 		if (!accepts(message)) {
 			return;
 		}
@@ -52,7 +58,7 @@ public abstract class Magneto {
 			body = body.replaceAll("  ", " ");
 		}
 		body = body.substring(userMention.length() + 1);
-		router.route(chat, user, body);
+		router.route(chat, context, body);
 	}
 
 	private boolean accepts(Message message) {

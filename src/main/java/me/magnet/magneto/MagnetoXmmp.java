@@ -27,6 +27,11 @@ public class MagnetoXmmp extends Magneto {
 		public void sendMessage(String message) throws XMPPException {
 			chat.sendMessage(message);
 		}
+
+		@Override
+		public String getRoom() {
+			return chat.getRoom();
+		}
 	}
 
 	private final RequestRouter router;

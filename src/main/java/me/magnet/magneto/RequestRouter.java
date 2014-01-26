@@ -43,7 +43,7 @@ public class RequestRouter {
 	}
 
 
-	public void route(ChatRoom chat, User user, String message) {
+	public void route(ChatRoom chat, Context context, String message) {
 		boolean handled = false;
 		if (message.equals("help")) {
 			printHelp(chat);
@@ -56,13 +56,17 @@ public class RequestRouter {
 				try {
 					String pluginName = handler.getTarget().getClass().getSimpleName();
 					log.info("Dispatching message: \"{}\" from: \"{}\" to: \"{}\"",
-					  message, user.getFullName(), pluginName);
-					handler.handle(chat, user, message);
+					  message, context.getFrom(), pluginName);
+					handler.handle(chat, context, message);
 				}
-				catch (IllegalAccessException | IllegalArgumentException
-				  | InvocationTargetException e) {
+				catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					log.error(e.getMessage(), e);
-					handled = false;
+					try {
+						chat.sendMessage("Whoops, there was an error: " + e.getMessage());
+					}
+					catch (XMPPException e1) {
+						log.error("Could not send error", e);
+					}
 				}
 				break;
 			}
@@ -71,7 +75,7 @@ public class RequestRouter {
 		if (!handled) {
 			log.warn("The message: \"{}\" was not handled!", message);
 			try {
-				chat.sendMessage("I'm sorry " + user.getFirstName()
+				chat.sendMessage("I'm sorry " + context.getFrom().getFirstName()
 				  + " but I don't know what you mean by that.");
 			}
 			catch (XMPPException e) {
