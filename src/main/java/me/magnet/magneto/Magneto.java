@@ -1,5 +1,6 @@
 package me.magnet.magneto;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.plugins.PluginFinder;
 import org.jivesoftware.smack.packet.Message;
@@ -62,6 +63,9 @@ public abstract class Magneto {
 	}
 
 	private boolean accepts(Message message) {
+		if (Strings.isNullOrEmpty(message.getBody())) {
+			return false;
+		}
 		String body = message.getBody().trim();
 		if (!body.contains(" ")) {
 			return false;
