@@ -29,22 +29,20 @@ public class HandlerTest {
 		private String second;
 
 		@RespondTo("test {a} and {b}")
-		public Response deploy(
+		public void deploy(
 		  final @Param("a") String first,
 		  final @Param("b") String second) {
 			this.first = first;
 			this.second = second;
-			return Response.fireAndForget().sendMessage(first).sendMessage(second);
 		}
 
 		@RespondTo("context {a} and {b}")
-		public Response deploy(
+		public void deploy(
 		  final @Param("a") String first,
 		  final @Param("b") String second,
-			final Context context) {
+		  final Context context) {
 			this.first = first;
 			this.second = second;
-			return Response.fireAndForget().sendMessage(context.getFrom().getFullName());
 		}
 
 	}
@@ -57,8 +55,6 @@ public class HandlerTest {
 	@Mock
 	private ChatRoom chat;
 
-	@Mock
-	private Response observable;
 
 	@Before
 	public void setup() throws NoSuchMethodException, SecurityException {
@@ -91,7 +87,7 @@ public class HandlerTest {
 	}
 
 	@Test
-	public void testContextIsInjected() throws  Exception {
+	public void testContextIsInjected() throws Exception {
 		String query = "context a and b";
 		Method method =
 		  testPlugin.getClass().getDeclaredMethod("deploy", String.class, String.class, Context.class);

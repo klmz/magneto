@@ -59,7 +59,16 @@ public abstract class Magneto {
 			body = body.replaceAll("  ", " ");
 		}
 		body = body.substring(userMention.length() + 1);
-		router.route(chat, context, body);
+		try {
+			router.route(chat, context, body);
+		} catch (DeliveryException e) {
+			log.warn("Could not deliver a response. Try sending that to the client. Reason: {}", e.getMessage());
+			try {
+				chat.sendMessage("It seems one of my responses did not reach you. Please try again.");
+			} catch (DeliveryException e2) {
+				log.error("The warning for a failed response could not be delivered. Giving up...", e2);
+			}
+		}
 	}
 
 	private boolean accepts(Message message) {

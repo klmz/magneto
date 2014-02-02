@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.annotations.RespondTo;
 import me.magnet.magneto.plugins.MagnetoPlugin;
-import org.jivesoftware.smack.XMPPException;
 
 /**
  * Routers messages to the appriopiate handler. Once they're at their handler the router routes the responses
@@ -61,12 +60,7 @@ public class RequestRouter {
 				}
 				catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					log.error(e.getMessage(), e);
-					try {
-						chat.sendMessage("Whoops, there was an error: " + e.getMessage());
-					}
-					catch (XMPPException e1) {
-						log.error("Could not send error", e);
-					}
+					chat.sendMessage("Whoops, there was an error: " + e.getMessage());
 				}
 				break;
 			}
@@ -74,14 +68,10 @@ public class RequestRouter {
 
 		if (!handled) {
 			log.warn("The message: \"{}\" was not handled!", message);
-			try {
-				chat.sendMessage("I'm sorry " + context.getFrom().getFirstName()
-				  + " but I don't know what you mean by that.");
-			}
-			catch (XMPPException e) {
-				log.error(e.getMessage(), e);
-			}
+			chat.sendMessage("I'm sorry " + context.getFrom().getFirstName()
+			  + " but I don't know what you mean by that.");
 		}
+
 	}
 
 	private void printHelp(ChatRoom chat) {
@@ -94,11 +84,6 @@ public class RequestRouter {
 			}
 			sb.append("\n");
 		}
-		try {
-			chat.sendMessage(sb.toString());
-		}
-		catch (XMPPException e) {
-			log.error("Could not print the hep message");
-		}
+		chat.sendMessage(sb.toString());
 	}
 }

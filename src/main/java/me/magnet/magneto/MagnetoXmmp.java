@@ -3,7 +3,6 @@ package me.magnet.magneto;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
@@ -132,35 +131,5 @@ public class MagnetoXmmp extends Magneto {
 		log.info("Shutdown complete");
 	}
 
-	@Value
-	private static class XmmpChatRoomRelay implements ChatRoom {
 
-		private MultiUserChat chat;
-
-		@Override
-		public void sendMessage(String message) throws XMPPException {
-			chat.sendMessage(message);
-		}
-
-		@Override
-		public String getRoom() {
-			return chat.getRoom();
-		}
-	}
-
-	@Value
-	private static class XmmpSinglePersonChatRoomRelay implements ChatRoom {
-
-		private Chat chat;
-
-		@Override
-		public void sendMessage(String message) throws XMPPException {
-			chat.sendMessage(message);
-		}
-
-		@Override
-		public String getRoom() {
-			return chat.getParticipant();
-		}
-	}
 }

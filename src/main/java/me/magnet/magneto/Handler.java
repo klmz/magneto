@@ -42,7 +42,7 @@ class Handler {
 
 	/**
 	 * @param chat    The room messages have to be sent to.
-	 * @param context    The user that sent the message.
+	 * @param context The user that sent the message.
 	 * @param message The incoming message.
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
@@ -55,18 +55,12 @@ class Handler {
 		Matcher matcher = pattern.matcher(message);
 		matcher.matches();
 
-		Object[] values = parseValues(matcher, context);
-		Response output = (Response) method.invoke(target, values);
-		output.setHandler(new AbstractMessageHandler() {
-			@Override
-			public void newMessage(String message) throws Exception {
-				chat.sendMessage(message);
-			}
-		});
+		Object[] values = parseValues(matcher, context, chat);
+		method.invoke(target, values);
 	}
 
 
-	private Object[] parseValues(Matcher matcher, Context context) {
+	private Object[] parseValues(Matcher matcher, Context context, ChatRoom chat) {
 		Param[] params = getParams(method);
 		Class<?>[] types = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
@@ -74,7 +68,11 @@ class Handler {
 		for (int index = 0; index < annotations.length; index++) {
 			if (types[index].isAssignableFrom(Context.class)) {
 				values[index] = context;
-			} else {
+			}
+			else if (types[index].isAssignableFrom(ChatRoom.class)) {
+				values[index] = chat;
+			}
+			else {
 				String name = params[index].value();
 				String value = matcher.group(name);
 				Class<?> type = types[index];

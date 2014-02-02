@@ -13,3 +13,4 @@ target/
 
 # Other files #
 ./config.properties
+.tmp/
