@@ -1,17 +1,15 @@
 package me.magnet.magneto;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManagerListener;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.SASLAuthentication;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
@@ -26,6 +24,8 @@ public class MagnetoXmmp extends Magneto {
 
 	private final RequestRouter router;
 	private final Settings settings;
+	private final Set<String> joinedRooms = Sets.newHashSet();
+	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 	public MagnetoXmmp(RequestRouter router, Settings settings) {
 		super(router, settings.getUserMention());
@@ -48,19 +48,41 @@ public class MagnetoXmmp extends Magneto {
 
 		connection.login(username, password);
 
-
-		listenToChatRooms(connection);
 		listenForOneToOneChats(connection);
+		listenToChatRooms(connection);
 		awaitShutdown(connection);
 	}
 
 
+	private void listenToChatRooms(final XMPPConnection connection) throws XMPPException {
+		executorService.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					checkForNewRooms(connection);
+				}
+				catch (XMPPException | RuntimeException e) {
+					log.error("Could not listen to room.", e);
+				}
+			}
+		}, 0, 10, TimeUnit.SECONDS);
 
-	private void listenToChatRooms(XMPPConnection connection) throws XMPPException {
+	}
+
+	private void checkForNewRooms(XMPPConnection connection) throws XMPPException {
 		Collection<HostedRoom> hostedRooms =
 		  MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
-		for (final HostedRoom room : hostedRooms) {
-			listenToRoom(connection, settings, room);
+		Set<String> encountered = Sets.newHashSet();
+		synchronized (joinedRooms) {
+			for (final HostedRoom room : hostedRooms) {
+				encountered.add(room.getJid());
+				if (joinedRooms.add(room.getJid())) {
+					listenToRoom(connection, settings, room);
+				}
+			}
+			if (joinedRooms.retainAll(encountered)) {
+				log.info("One or more rooms were deleted");
+			}
 		}
 	}
 
@@ -120,10 +142,11 @@ public class MagnetoXmmp extends Magneto {
 				waitForDisconnect.countDown();
 			}
 		}));
-
 		try {
 			waitForDisconnect.await();
 			log.info("Disconnecting");
+			executorService.shutdown();
+			executorService.awaitTermination(10, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException e) {
 			log.warn("Exiting before disconnect completed");
