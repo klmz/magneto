@@ -1,9 +1,12 @@
 package me.magnet.magneto;
 
+import javax.inject.Inject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import lombok.extern.slf4j.Slf4j;
+import me.magnet.magneto.hipchat.HipChatNotification;
 import org.jivesoftware.smack.packet.Message;
 
 /**
@@ -12,6 +15,7 @@ import org.jivesoftware.smack.packet.Message;
 @Slf4j
 public class MagnetoCli extends Magneto {
 
+	@Inject
 	public MagnetoCli(RequestRouter router) {
 		super(router, "magneto");
 	}
@@ -41,6 +45,11 @@ public class MagnetoCli extends Magneto {
 			@Override
 			public void sendMessage(String message) {
 				System.out.println("Response: " + message);
+			}
+
+			@Override
+			public void sendHtml(HipChatNotification message) {
+				System.out.println("HTML response: " + message);
 			}
 
 			@Override

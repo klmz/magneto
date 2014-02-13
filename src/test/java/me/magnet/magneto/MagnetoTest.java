@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
+import me.magnet.magneto.hipchat.HipChatApi;
 import org.jivesoftware.smack.packet.Message;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,11 +32,14 @@ public class MagnetoTest {
 	@Captor
 	ArgumentCaptor<String> bodyCaptor;
 
+	@Mock
+	private HipChatApi hipchatApi;
+
 	@Before
 	public void setup() throws IOException {
 		Settings sets = new Settings();
 		sets.load();
-		magneto = new MagnetoXmmp(router, sets);
+		magneto = new MagnetoXmmp(router, sets, hipchatApi);
 	}
 
 	@Test

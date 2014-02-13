@@ -40,6 +40,10 @@ public @interface RespondTo {
 	 * A string or regular expression that is applied to every incoming message to see if it applies.
 	 * @return
 	 */
-	String value();
+	String regex();
+
+	String description() default "";
+
+	String example() default "";
 	
 }

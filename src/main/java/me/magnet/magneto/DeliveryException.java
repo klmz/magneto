@@ -1,10 +1,12 @@
 package me.magnet.magneto;
 
-import org.jivesoftware.smack.XMPPException;
-
 public class DeliveryException extends RuntimeException {
 
-	public DeliveryException(XMPPException cause, String message) {
+	public DeliveryException(String message) {
+		super("Could not send " + message);
+	}
+
+	public DeliveryException(String message, Exception cause) {
 		super("Could not send " + message, cause);
 	}
 }

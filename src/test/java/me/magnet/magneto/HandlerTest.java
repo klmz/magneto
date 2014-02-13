@@ -20,41 +20,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class HandlerTest {
 
-	@Data
-	@NoArgsConstructor
-	@Accessors(chain = true)
-	public static class TestPlugin extends MagnetoPluginAdapter {
-
-		private String first;
-		private String second;
-
-		@RespondTo("test {a} and {b}")
-		public void deploy(
-		  final @Param("a") String first,
-		  final @Param("b") String second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		@RespondTo("context {a} and {b}")
-		public void deploy(
-		  final @Param("a") String first,
-		  final @Param("b") String second,
-		  final Context context) {
-			this.first = first;
-			this.second = second;
-		}
-
-	}
-
 	private TestPlugin testPlugin;
 	private Handler handler;
 	private User user;
 	private Context context;
-
 	@Mock
 	private ChatRoom chat;
-
 
 	@Before
 	public void setup() throws NoSuchMethodException, SecurityException {
@@ -97,5 +68,32 @@ public class HandlerTest {
 		handler.handle(chat, context, query);
 		assertThat(testPlugin.getFirst(), is("a"));
 		assertThat(testPlugin.getSecond(), is("b"));
+	}
+
+	@Data
+	@NoArgsConstructor
+	@Accessors(chain = true)
+	public static class TestPlugin extends MagnetoPluginAdapter {
+
+		private String first;
+		private String second;
+
+		@RespondTo(regex = "test {a} and {b}")
+		public void deploy(
+		  final @Param("a") String first,
+		  final @Param("b") String second) {
+			this.first = first;
+			this.second = second;
+		}
+
+		@RespondTo(regex = "context {a} and {b}")
+		public void deploy(
+		  final @Param("a") String first,
+		  final @Param("b") String second,
+		  final Context context) {
+			this.first = first;
+			this.second = second;
+		}
+
 	}
 }
