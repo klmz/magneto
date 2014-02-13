@@ -22,7 +22,7 @@ class Handler {
 	private final Pattern pattern;
 
 	public Handler(MagnetoPlugin target, Method method) {
-		String key = method.getAnnotation(RespondTo.class).value();
+		String key = method.getAnnotation(RespondTo.class).regex();
 		key = key.replace("{", "(?<");
 		key = key.replace("}", ">.+)");
 		key = "^" + key + "$";

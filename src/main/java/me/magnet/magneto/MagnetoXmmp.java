@@ -1,5 +1,7 @@
 package me.magnet.magneto;
 
+import javax.inject.Inject;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -9,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import me.magnet.magneto.hipchat.HipChatApi;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -17,20 +20,23 @@ import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 /**
- * The Xmmp verison of Magneto. Requires a configuration.properties to be on the classpath.
+ * The Xmmp version of Magneto. Requires a configuration.properties to be on the classpath.
  */
 @Slf4j
 public class MagnetoXmmp extends Magneto {
 
 	private final RequestRouter router;
 	private final Settings settings;
+	private final HipChatApi hipChatApi;
 	private final Set<String> joinedRooms = Sets.newHashSet();
 	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-	public MagnetoXmmp(RequestRouter router, Settings settings) {
+	@Inject
+	public MagnetoXmmp(RequestRouter router, Settings settings, HipChatApi hipChatApi) {
 		super(router, settings.getUserMention());
 		this.router = router;
 		this.settings = settings;
+		this.hipChatApi = hipChatApi;
 	}
 
 	@Override
@@ -48,7 +54,6 @@ public class MagnetoXmmp extends Magneto {
 
 		connection.login(username, password);
 
-		listenForOneToOneChats(connection);
 		listenToChatRooms(connection);
 		awaitShutdown(connection);
 	}
@@ -86,26 +91,6 @@ public class MagnetoXmmp extends Magneto {
 		}
 	}
 
-	private void listenForOneToOneChats(XMPPConnection connection) {
-		connection.getChatManager().addChatListener(new ChatManagerListener() {
-			@Override
-			public void chatCreated(Chat chat, boolean createdLocally) {
-				final XmmpSinglePersonChatRoomRelay relay = new XmmpSinglePersonChatRoomRelay(chat);
-				chat.addMessageListener(new MessageListener() {
-					@Override
-					public void processMessage(Chat chat, Message message) {
-						try {
-							MagnetoXmmp.this.processMessage(relay, message);
-						}
-						catch (Exception e) {
-							log.error("Cannot process message: {}", e.getMessage(), e);
-						}
-					}
-				});
-			}
-		});
-	}
-
 	private void listenToRoom(XMPPConnection connection, Settings settings, final HostedRoom room)
 	  throws XMPPException {
 		final MultiUserChat chat = new MultiUserChat(connection, room.getJid());
@@ -117,7 +102,7 @@ public class MagnetoXmmp extends Magneto {
 		chat.join(settings.getUserDisplayName(), null, discussionHistory, 30000);
 		log.info("Joined room: " + room.getJid());
 
-		final XmmpChatRoomRelay relay = new XmmpChatRoomRelay(chat);
+		final XmmpChatRoomRelay relay = new XmmpChatRoomRelay(chat, hipChatApi);
 		chat.addMessageListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {

@@ -1,8 +1,8 @@
 package me.magnet.magneto;
 
 import com.google.common.base.Strings;
+import com.google.inject.Guice;
 import lombok.extern.slf4j.Slf4j;
-import me.magnet.magneto.plugins.PluginFinder;
 import org.jivesoftware.smack.packet.Message;
 
 /**
@@ -26,19 +26,10 @@ public abstract class Magneto {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		RequestRouter router = new RequestRouter();
 
-		PluginFinder.addPluginsTo(router);
+		boolean cliMode = args.length > 0 && "CLI".equalsIgnoreCase(args[0]);
 
-		Magneto magneto;
-		if (args.length > 0 && "CLI".equalsIgnoreCase(args[0])) {
-			magneto = new MagnetoCli(router);
-		}
-		else {
-			Settings settings = new Settings();
-			settings.load();
-			magneto = new MagnetoXmmp(router, settings);
-		}
+		Magneto magneto = Guice.createInjector(new MagnetoModule(cliMode)).getInstance(Magneto.class);
 		magneto.start();
 	}
 

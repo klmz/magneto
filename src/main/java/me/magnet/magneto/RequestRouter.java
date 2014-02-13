@@ -9,6 +9,8 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.annotations.RespondTo;
+import me.magnet.magneto.hipchat.HipChatNotification;
+import me.magnet.magneto.hipchat.HtmlTableBuilder;
 import me.magnet.magneto.plugins.MagnetoPlugin;
 
 /**
@@ -19,7 +21,7 @@ import me.magnet.magneto.plugins.MagnetoPlugin;
 public class RequestRouter {
 
 	private final List<Handler> handlers;
-	private final ListMultimap<String, String> pluginCommands = ArrayListMultimap.create();
+	private final ListMultimap<String, RespondTo> pluginCommands = ArrayListMultimap.create();
 
 	public RequestRouter() {
 		this.handlers = Lists.newArrayList();
@@ -32,7 +34,7 @@ public class RequestRouter {
 			for (Method method : methods) {
 				if (method.isAnnotationPresent(RespondTo.class)) {
 					handlers.add(new Handler(command, method));
-					pluginCommands.put(command.getName(), method.getAnnotation(RespondTo.class).value());
+					pluginCommands.put(command.getName(), method.getAnnotation(RespondTo.class));
 				}
 			}
 		}
@@ -58,9 +60,13 @@ public class RequestRouter {
 					  message, context.getFrom(), pluginName);
 					handler.handle(chat, context, message);
 				}
-				catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				catch (IllegalAccessException | IllegalArgumentException e) {
 					log.error(e.getMessage(), e);
 					chat.sendMessage("Whoops, there was an error: " + e.getMessage());
+				}
+				catch (InvocationTargetException e) {
+					log.error(e.getCause().getMessage(), e);
+					chat.sendMessage("Whoops, there was an error: " + e.getCause().getMessage());
 				}
 				break;
 			}
@@ -76,14 +82,19 @@ public class RequestRouter {
 
 	private void printHelp(ChatRoom chat) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("The commands available to you are:\n");
+		sb.append("The commands available to you are:<br>");
 		for (String key : pluginCommands.keySet()) {
-			sb.append("Plugin \"").append(key).append("\":\n");
-			for (String command : pluginCommands.get(key)) {
-				sb.append("  ").append(command).append('\n');
+			sb.append("<strong>Plugin \"").append(key).append("\":</strong>");
+			HtmlTableBuilder tableBuilder = new HtmlTableBuilder(sb);
+			tableBuilder.openRow().append("Expression:").append("Description:").append("Example:").closeRow();
+			for (RespondTo command : pluginCommands.get(key)) {
+				tableBuilder.openRow().append(command.regex())
+							.append(command.description())
+							.append(command.example())
+							.closeRow();
 			}
-			sb.append("\n");
+			tableBuilder.close().append("</br>");
 		}
-		chat.sendMessage(sb.toString());
+		chat.sendHtml(new HipChatNotification(sb.toString()));
 	}
 }
