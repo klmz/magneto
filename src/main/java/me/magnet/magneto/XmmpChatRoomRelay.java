@@ -28,6 +28,11 @@ class XmmpChatRoomRelay implements ChatRoom {
 		hipChatApi.send(message, getRoomId(chat));
 	}
 
+	@Override
+	public void sendHtml(String message) {
+		sendHtml(new HipChatNotification(message));
+	}
+
 	private String getRoomId(MultiUserChat chat) {
 		String room = chat.getRoom();
 		int index = room.indexOf('_');

@@ -4,11 +4,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;
 import me.magnet.magneto.DeliveryException;
 import me.magnet.magneto.Settings;
@@ -47,7 +45,6 @@ class HipChatApiImpl implements HipChatApi {
 			post.setEntity(new StringEntity(postBody, Charsets.UTF_8));
 			HttpResponse response = client.execute(post);
 			if (response.getStatusLine().getStatusCode() != HttpStatus.SC_NO_CONTENT) {
-				String body = CharStreams.toString(new InputStreamReader(response.getEntity().getContent()));
 				throw new DeliveryException(notification
 				  + " received status code: " + response.getStatusLine().getStatusCode()
 				+ " message: " + response.getStatusLine().getReasonPhrase());

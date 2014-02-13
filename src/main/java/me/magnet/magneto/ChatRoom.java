@@ -28,6 +28,12 @@ public interface ChatRoom {
 	public void sendHtml(HipChatNotification message);
 
 	/**
+	 * @param message The message you want to send.
+	 * @see {@link #sendHtml(me.magnet.magneto.hipchat.HipChatNotification)}
+	 */
+	public void sendHtml(String message);
+
+	/**
 	 * @return The name of the room.
 	 */
 	public String getRoom();
