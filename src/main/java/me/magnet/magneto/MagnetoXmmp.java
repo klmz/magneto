@@ -78,15 +78,21 @@ public class MagnetoXmmp extends Magneto {
 		Collection<HostedRoom> hostedRooms =
 		  MultiUserChat.getHostedRooms(connection, settings.getConferenceServerHost());
 		Set<String> encountered = Sets.newHashSet();
+		boolean changeFound = false;
 		synchronized (joinedRooms) {
 			for (final HostedRoom room : hostedRooms) {
 				encountered.add(room.getJid());
 				if (joinedRooms.add(room.getJid())) {
 					listenToRoom(connection, settings, room);
+					changeFound = true;
 				}
 			}
 			if (joinedRooms.retainAll(encountered)) {
 				log.info("One or more rooms were deleted");
+				changeFound = true;
+			}
+			if (changeFound) {
+				hipChatApi.refreshRoomIds();
 			}
 		}
 	}

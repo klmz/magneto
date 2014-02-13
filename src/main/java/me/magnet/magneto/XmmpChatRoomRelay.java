@@ -1,6 +1,5 @@
 package me.magnet.magneto;
 
-import com.google.common.net.UrlEscapers;
 import lombok.Value;
 import me.magnet.magneto.hipchat.HipChatApi;
 import me.magnet.magneto.hipchat.HipChatNotification;
@@ -25,7 +24,7 @@ class XmmpChatRoomRelay implements ChatRoom {
 
 	@Override
 	public void sendHtml(HipChatNotification message) {
-		hipChatApi.send(message, getRoomId(chat));
+		hipChatApi.send(message, chat.getRoom());
 	}
 
 	@Override
@@ -33,18 +32,6 @@ class XmmpChatRoomRelay implements ChatRoom {
 		sendHtml(new HipChatNotification(message));
 	}
 
-	private String getRoomId(MultiUserChat chat) {
-		String room = chat.getRoom();
-		int index = room.indexOf('_');
-		int atIndex = room.indexOf('@');
-		if (index > 0) {
-			room = room.substring(index + 1, atIndex).replaceAll("_", " ");
-			return UrlEscapers.urlPathSegmentEscaper().escape(room);
-		}
-		else {
-			return room;
-		}
-	}
 
 	@Override
 	public String getRoom() {
