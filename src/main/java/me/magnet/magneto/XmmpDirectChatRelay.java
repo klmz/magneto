@@ -57,7 +57,7 @@ class XmmpDirectChatRelay implements ChatRoom {
         //Make a list of included images if there are any.
         Elements images = doc.select("img");
         if(images.size()>0){
-            plainText += "\n These images where included:\n";
+            plainText += "\n These images were included:\n";
             for(Element image : images){
                 plainText += image.attr("src").toString()+"\n";
             }
