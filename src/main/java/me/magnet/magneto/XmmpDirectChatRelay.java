@@ -18,7 +18,6 @@ class XmmpDirectChatRelay implements ChatRoom {
 
 	private Chat chat;
 	private HipChatApi hipChatApi;
-
 	@Override
 	public void sendMessage(String message) {
 		try {
@@ -29,38 +28,39 @@ class XmmpDirectChatRelay implements ChatRoom {
 		}
 	}
 
+
+    //HTML message are not yet supported by the hipchat api implementation so they need to be convert to plain text.
 	@Override
 	public void sendHtml(HipChatNotification message) {
-        //Facebook does not support html.
-        //So convert any html back to plaintext to still have all the functionality of plugins
-        String messageText = message.toString();//TODO get rid of html tags.
-        String plainText = stripHtml(messageText);
-        sendMessage(plainText);
-        log.info("Sending html in plaintext");
+            String plainText = stripHtml(message.toString());
+            sendMessage(plainText);
 	}
 
 	@Override
 	public void sendHtml(String message) {
-        //Facebook does not support html
-        //So convert any html back to plaintext to still have all the functionality of plugins
-        log.info("Sending html in plaintext");
+            String plainText = stripHtml(message);
+            sendMessage(plainText);
 
-        String plainText = stripHtml(message);
-
-        sendMessage(plainText);
 	}
 
+    /**
+     * If html is not supported convert html needs to be converted plain text.
+     * @param message
+     * @return
+     */
     private String stripHtml(String message) {
         Document doc = Jsoup.parse(message);
 
         //Convert body to plain text.
         String plainText = doc.body().text();
 
-        //Make a list of included images.
+        //Make a list of included images if there are any.
         Elements images = doc.select("img");
-        plainText += "\n These images where included:\n";
-        for(Element image : images){
-            plainText += image.attr("src").toString()+"\n";
+        if(images.size()>0){
+            plainText += "\n These images where included:\n";
+            for(Element image : images){
+                plainText += image.attr("src").toString()+"\n";
+            }
         }
 
         return plainText;
