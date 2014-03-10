@@ -3,6 +3,7 @@ package me.magnet.magneto;
 import com.google.common.base.Strings;
 import com.google.inject.Guice;
 import lombok.extern.slf4j.Slf4j;
+import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 
 /**
@@ -62,7 +63,7 @@ public abstract class Magneto {
 		}
 	}
 
-	private boolean accepts(Message message) {
+	protected boolean accepts(Message message) {
 		if (Strings.isNullOrEmpty(message.getBody())) {
 			return false;
 		}

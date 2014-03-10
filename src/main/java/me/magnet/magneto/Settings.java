@@ -22,6 +22,7 @@ public class Settings {
 	private static final String CHAT_USER_PASSWORD = "magneto.chat.user.password";
 	private static final String CHAT_USER_MENTION = "magneto.char.user.mention";
 	private static final String HIPCHAT_TOKEN = "magneto.chat.hipchat.token";
+    private static final String SERVICE_NAME = "magneto.chat.service.name";
 
 	private final Properties properties;
 
@@ -73,4 +74,8 @@ public class Settings {
 	public String getHipchatToken() {
 		return properties.getProperty(HIPCHAT_TOKEN);
 	}
+
+    public String getServiceName() {
+        return properties.getProperty(SERVICE_NAME);
+    }
 }

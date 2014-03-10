@@ -14,3 +14,7 @@ target/
 # Other files #
 ./config.properties
 .tmp/
+
+#project files #
+.idea/
+*.iml
